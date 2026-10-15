@@ -1,0 +1,44 @@
+name: Newsroom
+
+# Open an issue (or reply to one) and the AI writes and publishes the story.
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  models: read
+  actions: write
+
+concurrency:
+  group: newsroom
+  cancel-in-progress: false
+
+jobs:
+  write-story:
+    # Only you and people you add as collaborators can make stories.
+    if: >-
+      github.event.sender.type != 'Bot' &&
+      (
+        (github.event_name == 'issues' &&
+          contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)) ||
+        (github.event_name == 'issue_comment' && !github.event.issue.pull_request &&
+          contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install photo tools
+        run: pip install pillow
+      - name: Write and publish the story
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python newsroom.py
