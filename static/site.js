@@ -10,6 +10,35 @@
     } catch (e) { /* keep the built-in date */ }
   }
 
+  // Breaking news ticker. Scrolls with JavaScript so it works in every
+  // browser. Hover over it, or tab into it, to pause.
+  var track = document.querySelector(".ticker-track");
+  var mover = document.querySelector(".ticker-move");
+  if (track && mover && mover.firstElementChild) {
+    var speed = 70; // pixels per second
+    var x = 0;
+    var last = null;
+    var paused = false;
+    var pause = function () { paused = true; };
+    var play = function () { paused = false; };
+    track.addEventListener("mouseenter", pause);
+    track.addEventListener("mouseleave", play);
+    track.addEventListener("focusin", pause);
+    track.addEventListener("focusout", play);
+    var step = function (now) {
+      if (last !== null && !paused) {
+        var seconds = Math.min((now - last) / 1000, 0.1);
+        var loop = mover.firstElementChild.offsetWidth;
+        x -= speed * seconds;
+        if (loop > 0 && -x >= loop) x += loop;
+        mover.style.transform = "translate3d(" + x + "px, 0, 0)";
+      }
+      last = now;
+      window.requestAnimationFrame(step);
+    };
+    window.requestAnimationFrame(step);
+  }
+
   // Share button on story pages.
   var button = document.querySelector("[data-share]");
   if (!button) return;

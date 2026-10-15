@@ -10,7 +10,8 @@ A fake news site for you and your friends. Free to host.
 | `images/` | Photos for stories. Optional. |
 | `static/` | Look of the site, icons, link preview image. |
 | `build.py` | Turns your stories into the website. |
-| `.github/workflows/deploy.yml` | Publishes the site automatically on GitHub. |
+| `newsroom.py` | The AI robot that writes stories from issues. |
+| `.github/workflows/` | Publishes the site, and runs the AI newsroom. |
 
 ## One-time setup (GitHub Pages, free)
 
@@ -36,7 +37,23 @@ A fake news site for you and your friends. Free to host.
    Delete any old A records for `@` first.
 9. Wait. Can take a few hours. Then tick **Enforce HTTPS** in Settings > Pages.
 
-## Post a new story
+## AI newsroom (easiest way to post)
+
+1. Open the **Issues** tab. Click **New issue**.
+2. Title: the story idea. Like `Dan got banned from Costco`.
+3. Optional: add details in the box. Drag in a photo.
+4. Click **Create**.
+
+About a minute later, the robot replies with the link. Works in the GitHub phone app too.
+
+- **Change it:** reply on the issue. Like "make it shorter" or "add that Dan cried."
+- **New photo:** reply with a photo dragged in.
+- **Take it down:** reply `delete`.
+- **Let friends post:** Settings > Collaborators > Add people. Strangers can't trigger it.
+
+Uses GitHub's free AI models. Around 50 stories a day before it asks you to wait. Tweak the writing style at the top of `newsroom.py`.
+
+## Post a new story by hand
 
 1. Open the `articles` folder on GitHub.
 2. Click **Add file > Create new file**.
