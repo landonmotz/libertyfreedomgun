@@ -3,7 +3,7 @@
 The Liberty Freedom Gun newsroom robot.
 
 GitHub runs this for you when you open an issue or reply to one.
-It asks a free GitHub AI model to write the story, saves it in articles/,
+It asks Google's free Gemini AI to write the story, saves it in articles/,
 publishes the site, and replies on the issue with the link.
 You never need to run it yourself.
 """
@@ -11,14 +11,9 @@ You never need to run it yourself.
 # ============================================================
 #  SETTINGS. Change these to whatever you like.
 # ============================================================
-# AI models to try, in order. All free through GitHub Models.
-MODELS = [
-    "openai/gpt-4.1",
-    "openai/gpt-5-chat",
-    "openai/gpt-4o",
-    "openai/gpt-4.1-mini",
-    "openai/gpt-4o-mini",
-]
+# Google Gemini models to try first. The robot also finds newer free
+# "Flash" models on its own, so you rarely need to touch this.
+MODELS = ["gemini-flash-latest", "gemini-2.5-flash", "gemini-flash-lite-latest"]
 
 # Used for story dates and front page order.
 TIME_ZONE = "America/New_York"
@@ -52,7 +47,8 @@ ARTICLES = ROOT / "articles"
 IMAGES = ROOT / "images"
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 REPO = os.environ.get("GITHUB_REPOSITORY", "")
-AI_URL = "https://models.github.ai/inference/chat/completions"
+AI_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+GEMINI = "https://generativelanguage.googleapis.com/v1beta"
 MARKER = re.compile(r"<!-- lfg-story: ([a-z0-9-]+) -->")
 
 SYSTEM = f"""You are the entire newsroom of {build.SITE_NAME}, a satirical news site in the deadpan style of The Onion. A group of friends sends you story ideas, often about each other.
@@ -169,23 +165,78 @@ def parse_json(text):
     return json.loads(text[start:end + 1])
 
 
-def ask_ai(messages):
-    rate_limited = False
+def version_of(name):
+    m = re.search(r"(\d+(?:\.\d+)?)", name)
+    return float(m.group(1)) if m else 0.0
+
+
+def model_list():
+    """Preferred models, plus any newer free Flash models Google offers."""
+    names = list(MODELS)
+    try:
+        req = urllib.request.Request(f"{GEMINI}/models?pageSize=200", headers={"x-goog-api-key": AI_KEY})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            listing = json.loads(r.read())
+        found = []
+        for m in listing.get("models", []):
+            name = m.get("name", "").replace("models/", "")
+            low = name.lower()
+            if "generateContent" not in m.get("supportedGenerationMethods", []):
+                continue
+            if "flash" not in low or "lite" in low:
+                continue
+            if any(word in low for word in ("image", "tts", "audio", "live", "embed", "exp")):
+                continue
+            found.append(name)
+        found.sort(key=lambda n: ("preview" in n, -version_of(n)))
+        names = names[:1] + found + names[1:]
+    except Exception as e:
+        print(f"Couldn't list models: {e}")
+    seen, ordered = set(), []
+    for n in names:
+        if n not in seen:
+            seen.add(n)
+            ordered.append(n)
+    return ordered[:6]
+
+
+def call_gemini(model, ask, json_mode):
+    config = {"temperature": 1.0}
+    if json_mode:
+        config["responseMimeType"] = "application/json"
+    payload = {
+        "systemInstruction": {"parts": [{"text": SYSTEM}]},
+        "contents": [{"role": "user", "parts": [{"text": ask}]}],
+        "generationConfig": config,
+    }
+    req = urllib.request.Request(
+        f"{GEMINI}/models/{model}:generateContent",
+        data=json.dumps(payload).encode(),
+        method="POST",
+        headers={"x-goog-api-key": AI_KEY, "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=180) as r:
+        data = json.loads(r.read())
+    candidates = data.get("candidates") or []
+    if not candidates:
+        reason = (data.get("promptFeedback") or {}).get("blockReason", "no reply")
+        raise ValueError(f"blocked: {reason}")
+    parts = (candidates[0].get("content") or {}).get("parts") or []
+    text = "".join(p.get("text", "") for p in parts if not p.get("thought"))
+    if not text.strip():
+        raise ValueError(f"blocked: {candidates[0].get('finishReason', 'empty reply')}")
+    return text
+
+
+def ask_ai(ask):
+    if not AI_KEY:
+        raise Problem("No AI key found. Add a GEMINI_API_KEY secret to the repo. The README shows how.")
+    rate_limited = blocked = False
     last_error = "no models tried"
-    for model in MODELS:
-        for fancy in (True, False):
-            payload = {"model": model, "messages": messages}
-            if fancy:
-                payload["temperature"] = 0.9
-                payload["response_format"] = {"type": "json_object"}
-            req = urllib.request.Request(AI_URL, data=json.dumps(payload).encode(), method="POST")
-            req.add_header("Authorization", f"Bearer {TOKEN}")
-            req.add_header("Content-Type", "application/json")
-            req.add_header("Accept", "application/json")
+    for model in model_list():
+        for json_mode in (True, False):
             try:
-                with urllib.request.urlopen(req, timeout=180) as r:
-                    data = json.loads(r.read())
-                story = parse_json(data["choices"][0]["message"]["content"])
+                story = parse_json(call_gemini(model, ask, json_mode))
                 if not story.get("title") or not story.get("body"):
                     raise ValueError("reply was missing a title or body")
                 print(f"Written by {model}")
@@ -194,19 +245,26 @@ def ask_ai(messages):
                 detail = e.read().decode("utf-8", "replace")[:300]
                 last_error = f"{model}: HTTP {e.code} {detail}"
                 print(last_error)
+                if e.code in (400, 401, 403) and ("API key" in detail or "API_KEY" in detail or "PERMISSION" in detail):
+                    raise Problem("Google rejected the AI key. Check the GEMINI_API_KEY secret.")
                 if e.code == 429:
                     rate_limited = True
-                if e.code == 400 and fancy:
+                if e.code == 400 and json_mode:
                     continue  # try again with simpler settings
                 break  # move on to the next model
             except (ValueError, KeyError, urllib.error.URLError, TimeoutError) as e:
                 last_error = f"{model}: {e}"
                 print(last_error)
-                if fancy:
+                if "blocked" in str(e):
+                    blocked = True
+                    break
+                if json_mode:
                     continue
                 break
+    if blocked:
+        raise Problem("The AI wouldn't write that one. Try wording it differently.")
     if rate_limited:
-        raise Problem("The free AI limit is used up for now. Try again in a few hours.")
+        raise Problem("The free AI limit is used up for now. Try again later.")
     raise Problem(f"The AI didn't give a usable story. Last error: {last_error}")
 
 
@@ -367,8 +425,7 @@ def new_story(number, issue, comment):
         ask += f"\n\nExtra details from the requester:\n{details}"
     ask += "\n\nThere is a photo, so write a caption." if photo_url else "\n\nNo photo. Leave caption empty."
 
-    story = tidy_story(ask_ai([{"role": "system", "content": SYSTEM},
-                               {"role": "user", "content": ask}]))
+    story = tidy_story(ask_ai(ask))
     slug = unique_slug(story["slug"] or story["title"])
     image = save_photo(photo_url, slug) if photo_url else ""
     note = "Couldn't use that photo. Try a JPG or PNG." if photo_url and not image else ""
@@ -389,8 +446,7 @@ def revise_story(number, slug, feedback):
     )
     if photo_url:
         ask += "\n\nThere is a new photo, so write a caption."
-    story = tidy_story(ask_ai([{"role": "system", "content": SYSTEM},
-                               {"role": "user", "content": ask}]))
+    story = tidy_story(ask_ai(ask))
 
     image, caption, note = old["image"], old["caption"], ""
     if photo_url:

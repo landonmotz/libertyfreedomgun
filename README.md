@@ -39,6 +39,15 @@ A fake news site for you and your friends. Free to host.
 
 ## AI newsroom (easiest way to post)
 
+**One-time setup:**
+
+1. Go to aistudio.google.com and sign in with Google.
+2. Click **Get API key**, then **Create API key**. Copy it.
+3. On GitHub: **Settings > Secrets and variables > Actions > New repository secret**.
+4. Name: `GEMINI_API_KEY`. Secret: paste the key. Click **Add secret**.
+
+**Posting a story:**
+
 1. Open the **Issues** tab. Click **New issue**.
 2. Title: the story idea. Like `Dan got banned from Costco`.
 3. Optional: add details in the box. Drag in a photo.
@@ -51,7 +60,7 @@ About a minute later, the robot replies with the link. Works in the GitHub phone
 - **Take it down:** reply `delete`.
 - **Let friends post:** Settings > Collaborators > Add people. Strangers can't trigger it.
 
-Uses GitHub's free AI models. Around 50 stories a day before it asks you to wait. Tweak the writing style at the top of `newsroom.py`.
+Uses Google's free Gemini AI. The free tier allows plenty of stories a day for a friend group. Google may use free-tier requests to improve its products. Tweak the writing style at the top of `newsroom.py`.
 
 ## Post a new story by hand
 
