@@ -113,10 +113,9 @@ a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 0.18e
   to { transform: translateX(-50%); }
 }
 
+/* Computers with animations turned off get a slower scroll. Hover to pause. */
 @media (prefers-reduced-motion: reduce) {
-  .ticker-move { animation: none; }
-  .ticker-track { overflow-x: auto; }
-  .ticker-set[aria-hidden="true"] { display: none; }
+  .ticker-move { animation-duration: calc(var(--ticker-time, 40s) * 1.6); }
 }
 
 /* ---------- Masthead ---------- */
