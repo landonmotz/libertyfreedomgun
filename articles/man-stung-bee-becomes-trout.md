@@ -3,26 +3,24 @@ date: 2026-10-15 15:32
 category: Local
 author: Arthur Pence
 dateline: MUNCIE, IN
-summary: A routine day at the gun range has taken an unexpected turn for Michael Smith, who is currently resting in an aerated storage tote.
+summary: A routine afternoon at an outdoor shooting range took an unexpected turn for Michael Smith, who is currently resting in an aerated tank.
 image: man-stung-bee-becomes-trout-photo92949.jpg
-caption: Smith, pictured above resting in a five-gallon Home Depot bucket, has reportedly refused all commercial flake food.
+caption: Smith, pictured above being held by friend Landon shortly after the incident, has reportedly refused all commercial flake food.
 ---
-Local tire warehouse area manager Michael Smith underwent a severe and medically unprecedented anaphylactic response to a standard yellowjacket sting Tuesday afternoon, resulting in his complete biological transition into an 11-inch rainbow trout.
+Local warehouse employee Michael Smith underwent a severe allergic reaction to an ordinary bee sting Tuesday afternoon, resulting in his complete biological transformation into an 11-inch rainbow trout.
 
-According to witnesses, Smith was sighting in his rifle down at the local shooting range when the insect landed directly on his cheek and delivered a single puncture to his face. While his shooting buddy Kevin rushed to retrieve an over-the-counter antihistamine, Smith reportedly dropped his firearm, shed his tactical vest, and began flopping rhythmically on the concrete firing line.
+According to witnesses, Smith was practicing at an outdoor shooting range when the insect stung him on the neck. While his friend Landon hurried to find medical supplies in the truck, Smith reportedly dropped his rifle, fell backward into the grass, and began flopping rhythmically near the target stands.
 
-Dr. Raymond Vance, chief of immunology at Delaware County Memorial Hospital, stated that while hives, swelling, and lightheadedness are typical reactions, complete freshwater ichthyological reorganization accounts for fewer than 0.0003% of all documented hymenoptera exposures.
+Dr. Raymond Vance, an allergist at Delaware County Memorial Hospital, stated that while hives and swelling are standard responses, freshwater fish reorganization occurs in an exceptionally small percentage of cases.
 
-"We typically prepare for airway constriction, but in Mr. Smith's case, his respiratory tract reorganized into fully functional gill rakers within ninety seconds," said Vance, checking the salinity of a bedside utility sink. "His vitals are stable, though he possesses no eyelids and his lateral line is extremely sensitive to fluorescent lighting."
+"Airway constriction is typical, but in this case, his respiratory system converted into functioning gills in under two minutes," said Vance. "His condition is stable, though he currently possesses no eyelids and startles easily at sudden movements."
 
 ## A Difficult Adjustment
 
-> "We typically prepare for airway constriction, but in Mr. Smith's case, his respiratory tract reorganized into fully functional gill rakers within ninety seconds."
+> "His condition is stable, though he currently possesses no eyelids and startles easily at sudden movements."
 
-Friends and coworkers have attempted to provide support, though communicating with the warehouse manager has proved challenging. Management at the tire distribution center confirmed that Smith has been granted two weeks of short-term medical leave, provided he submits weekly water temperature logs to demonstrate ongoing convalescence.
+Friends and coworkers have attempted to provide support, though communicating with Smith has proved challenging. Landon noted that while adjusting to the change has been strange, the household is taking things one day at a time.
 
-His roommate, Kevin, noted that while the transition has been difficult on the household, he remains optimistic about his friend's prognosis.
+"He usually hates doing chores anyway," Landon said, sprinkling a pinch of food into a plastic tub. "Now he just floats near the filter. I think he misses shooting, but it is hard to tell because his mouth just opens and closes at regular intervals."
 
-"Michael always hated unloading the semi trucks anyway," Kevin said, sprinkling three dried mealworms into the living room tub. "He just circles the filter now. I think he misses the gun range, but it is hard to tell because his mouth just opens and closes at regular four-second intervals."
-
-At press time, Smith was seen hovering motionless behind an artificial ceramic castle, visibly agitated by a leaf blower running next door.
+At press time, Smith was seen hovering motionless behind an artificial plastic plant, visibly agitated by a lawnmower running next door.
